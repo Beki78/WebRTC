@@ -2,37 +2,21 @@ import express from "express";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import dotenv from "dotenv"
+import mongoose from "mongoose";
+dotenv.config()
 
 const app = express();
-const server = createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
+app.use(express.json())
+const PORT = process.env.PORT || 3001
 
-app.use(cors());
-
-const PORT = process.env.PORT || 5000;
-
-app.get("/", (req, res) => {
-  res.send("Server is running");
-});
-
-io.on("connection", (socket) => {
-  socket.emit("me", socket.id);
-  socket.on("disconnect", () => {
-    socket.broadcast.emit("call ended");
-  });
-  socket.on("calluser", ({ userToCall, signalData, from, name }) => {
-    io.to(userToCall).emit("calluser", { signal: signalData, from, name });
-  });
-  socket.on("answercall", (data) => {
-    io.to(data.to).emit("callaccepted", data.signal)
-  })
-});
-
-server.listen(PORT, () => {
-  console.log(`server is running on PORT ${PORT}`);
-});
+mongoose.connect(process.env.DB_URI)
+.then(() => {
+    console.log("DB is connected");
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+})
+.catch((error) => {
+    console.log(error); 
+}) 
