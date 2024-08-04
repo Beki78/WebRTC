@@ -1,12 +1,8 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+import { genSaltSync } from "bcrypt";
 
 const UserSchema = new mongoose.Schema({
-  // Unique identifier for the user
-  userId: {
-    type: String,
-    unique: true,
-    required: [true, "This field can't be empty"],
-  },
   // Username chosen by the user
   userName: {
     type: String,
@@ -37,11 +33,17 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-// Add a pre-save hook to update the updatedAt field
-UserSchema.pre("save", function (next) {
+// Add a pre-save hook to update the updatedAt field and hash the password
+UserSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    // Only hash the password if it has been modified
+    const salt = genSaltSync(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  // Update the updatedAt field
   this.updatedAt = Date.now();
   next();
 });
 
-const User = mongoose.model("User", UserSchema)
+const User = mongoose.model("User", UserSchema);
 export default User;

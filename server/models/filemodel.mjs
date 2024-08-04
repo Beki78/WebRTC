@@ -7,9 +7,9 @@ const FileSchema = new mongoose.Schema({
     unique: true, // Ensures that each file has a unique identifier
   },
   userId: {
-    type: String,
-    required: true, // Indicates that this field is mandatory
-    trim: true, // Removes any leading or trailing whitespace
+    type: mongoose.Schema.Types.ObjectId, // Reference to the User model
+    ref: "User",
+    required: true,
   },
   fileName: {
     type: String,

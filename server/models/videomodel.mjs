@@ -9,7 +9,8 @@ const VideoSchema = new mongoose.Schema({
     trim: true, // Remove any extra spaces
   },
   participants: {
-    type: [String], // Array of user IDs participating in the conversation
+    type: [mongoose.Schema.Types.ObjectId], // Array of user IDs participating in the conversation
+    ref: "User",
     required: true, // Required field
   },
   startTime: {

@@ -6,9 +6,9 @@ const SessionSchema = new mongoose.Schema({
     unique: true,
   },
   userId: {
-    type: String, // User ID associated with the session
-    required: true,
-    required: [true, "This field can't be empty"],
+    type: mongoose.Schema.Types.ObjectId, // Reference to the User model
+    ref: "User", // The model being referenced
+    required: true, // Ensures this field is required
   },
   token: {
     type: String, // Authentication token for the session
